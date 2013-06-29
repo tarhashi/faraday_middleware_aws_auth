@@ -1,5 +1,5 @@
 module Faraday
-  class Request::AwsAuthentication < Faraday::Middleware
+  class Request::AwsAuthorization < Faraday::Middleware
     dependency 'openssl'
     dependency 'base64'
 
