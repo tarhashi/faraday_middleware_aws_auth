@@ -9,7 +9,7 @@ module Faraday
     end
 
     def call(env)
-      date_str = Time.now.strftime("%a, %d %b %Y %H:%M:%S +0000") 
+      date_str = Time.now.utc.strftime("%a, %d %b %Y %H:%M:%S +0000") 
       env[:request_headers]["Date"] = date_str
       env[:request_headers]["Authorization"] = "AWS #{@options[:access_key_id]}:#{sign(env, @options[:secret_access_key], date_str)}"
       @app.call(env)
