@@ -23,10 +23,9 @@ module Faraday
     end
     def string_to_sign(env, date_str)
       http_verb = env[:method].to_s.upcase
-      content_md5 = "" # todo implement
-      content_type = "" # todo implement
-      amz_headers = ""
-      # todo query string
+      content_md5 = env[:request_headers]["Content-MD5"] || ""
+      content_type = env[:request_headers]["Content-Type"] || ""
+      amz_headers = canonicalized_aws_headers(env[:request_headers])
       # todo hosted style
       resource = env[:url].path
       resource += env[:url].query if env[:url].query
@@ -37,6 +36,17 @@ module Faraday
         date_str,
         amz_headers + resource,
       ].join("\n")
+    end
+    def canonicalized_aws_headers(headers)
+      ret = ""
+      headers.sort_by{|k,v| k}.each do |key, value|
+        value = value.to_s.strip
+        if key =~ /x-amz-/i
+          ret << "#{key.downcase}:#{value}"
+          ret << "\n"
+        end
+      end
+      ret
     end
   end
 end
