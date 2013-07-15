@@ -26,9 +26,7 @@ module Faraday
       content_md5 = env[:request_headers]["Content-MD5"] || ""
       content_type = env[:request_headers]["Content-Type"] || ""
       amz_headers = canonicalized_aws_headers(env[:request_headers])
-      # todo hosted style
-      resource = env[:url].path
-      resource += env[:url].query if env[:url].query
+      resource = canonicalized_resource(env)
       [
         http_verb,
         content_md5,
@@ -47,6 +45,13 @@ module Faraday
         end
       end
       ret
+    end
+    def canonicalized_resource(env)
+      # todo hosted style
+      resource = ""
+      resource << env[:url].path
+      resource << "?#{env[:url].query}" if env[:url].query
+      resource
     end
   end
 end
